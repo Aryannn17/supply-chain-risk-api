@@ -2,7 +2,7 @@ import requests
 from datetime import datetime, timedelta
 
 # GNews API setup
-GNEWS_API_KEY = "XXX"
+GNEWS_API_KEY = os.getenv("GNEWS_API_KEY")
 
 RISK_KEYWORDS = {
     "conflict": 0.9,
