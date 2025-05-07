@@ -6,6 +6,15 @@ from typing import List, Dict
 load_dotenv()
 app = FastAPI()
 
+@app.get("/")
+def read_root():
+    return {
+        "message": "Welcome to the Supply Chain Risk Detector API 👋",
+        "docs": "/docs",
+        "example": "/risk_score?supplier=China&product=semiconductor"
+    }
+
+
 @app.get("/risk_score")
 def get_risk_score(supplier: str = Query(...), product: str = Query(...)):
     result = compute_risk_score(supplier, product)
