@@ -2,7 +2,7 @@ import requests
 from datetime import datetime, timedelta
 
 # GNews API setup
-GNEWS_API_KEY = "782fd41a0068c0f16a686d2b3aa79ebf"
+GNEWS_API_KEY = "XXX"
 
 RISK_KEYWORDS = {
     "conflict": 0.9,
