@@ -1,25 +1,26 @@
-# Supply Chain Risk Detector API 🚚📉
+# 🚚 Supply Chain Risk Detector API
 
-An AI-driven FastAPI application that identifies **supply chain risks** based on:
-- Real-time geopolitical news
-- Regional natural disaster profiles
-- Country-level economic instability
+An AI-powered FastAPI + Streamlit application that identifies **supply chain risks** based on:
+- 📰 Real-time geopolitical news (via GNews)
+- 🌍 Natural disaster likelihood by supplier region
+- 📉 Country-level economic stability
 
-This API helps businesses assess the reliability of their suppliers before making critical sourcing decisions.
+This API helps organizations assess supplier reliability and flag sourcing risks before they escalate.
 
 ---
 
 ## 🔧 Features
 
-✅ Real-time **news-based risk analysis** via GNews API  
-✅ Country-based **natural disaster likelihood** scoring  
-✅ Economic vulnerability scoring via **static risk map**  
-✅ Clean JSON API built with **FastAPI**  
-✅ Easily extendable and production-ready
+- ✅ Real-time **news risk analysis** via weighted keyword extraction
+- ✅ Country-specific **natural disaster likelihood** scoring
+- ✅ Static **economic vulnerability scoring** using macroeconomic mapping
+- ✅ **CSV batch scoring** support via API and Streamlit UI
+- ✅ Fully deployed **REST API (FastAPI)** + **frontend dashboard (Streamlit)**
+- ✅ Clean Swagger docs & public endpoints
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Local Dev)
 
 ### 1. Clone the repository
 ```bash
@@ -57,6 +58,28 @@ Visit:
     "economic_risk": 0.3
   }
 }
+
+🌐 Deployed Links
+🔌 API: https://supply-chain-risk-api.onrender.com
+
+🌐 Frontend: https://supply-chain-risk-api-lvwr9pd4jdhyej2ljm6spo.streamlit.app/
+
+📄 Swagger: https://supply-chain-risk-api.onrender.com/docs
+
+
+📦 Tech Stack
+Backend: FastAPI, Requests, Uvicorn
+Frontend: Streamlit, Pandas
+Deployment: Render (API) + Streamlit Cloud
+Data: GNews API + static disaster/economic mapping
+
+🧠 Future Enhancements
+⏳ Replace heuristics with ML/NLP scoring on news articles
+🌍 Live disaster feeds (e.g., GDACS, ReliefWeb)
+📈 Logging + analytics dashboard
+🔐 API key system for public usage
+📦 Package as SaaS microservice
+
 
 🧑‍💻 Author
 Built with ❤️ by Aryan Srivastva
