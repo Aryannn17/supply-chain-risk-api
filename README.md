@@ -59,7 +59,7 @@ Visit:
   }
 }
 
-- 🌐 Deployed Links
+🌐 Deployed Links
 - 🔌 API: https://supply-chain-risk-api.onrender.com
 
 - 🌐 Frontend: https://supply-chain-risk-api-lvwr9pd4jdhyej2ljm6spo.streamlit.app/
