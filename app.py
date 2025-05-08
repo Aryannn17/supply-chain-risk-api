@@ -28,6 +28,16 @@ st.subheader("📄 Upload CSV for Batch Scoring")
 
 uploaded_file = st.file_uploader("Upload a CSV file with 'supplier' and 'product' columns", type="csv")
 
+
+# Add interpretation
+def interpret(score):
+    if score < 0.35:
+        return "🟢 Low"
+    elif score < 0.7:
+        return "🟡 Medium"
+    else:
+        return "🔴 High"
+    
 if uploaded_file is not None:
 
     df = pd.read_csv(uploaded_file)
@@ -44,16 +54,6 @@ if uploaded_file is not None:
             if response.status_code == 200:
                 results = response.json()
                 results_df = pd.DataFrame(results)
-
-# Add interpretation
-def interpret(score):
-    if score < 0.35:
-        return "🟢 Low"
-    elif score < 0.7:
-        return "🟡 Medium"
-    else:
-        return "🔴 High"
-
 results_df["Risk Level"] = results_df["risk_score"].apply(interpret)
 
 # Show styled table
