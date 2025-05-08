@@ -1,47 +1,55 @@
 import os
 import requests
+import joblib
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 
-# GNews API setup
+load_dotenv()
+
+# ✅ Load GNews API key
 GNEWS_API_KEY = os.getenv("GNEWS_API_KEY")
 
-RISK_KEYWORDS = {
-    "conflict": 0.9,
-    "ban": 0.8,
-    "war": 1.0,
-    "sanction": 0.7,
-    "shortage": 0.6,
-    "strike": 0.6,
-    "disruption": 0.7,
-    "protest": 0.5,
-    "tariff": 0.4
+# ✅ Load trained ML model
+model = joblib.load("news_risk_model.pkl")
+
+# ✅ Label-to-score mapping
+LABEL_TO_SCORE = {
+    "Low": 0.2,
+    "Medium": 0.5,
+    "High": 0.8
 }
 
-# ✅ 1. News Risk
+# ✅ 1. News Risk (ML-based)
 def get_news_risk(supplier, product):
     query = f"{supplier} {product}"
     to_date = datetime.utcnow()
     from_date = to_date - timedelta(days=7)
 
-    url = f"https://gnews.io/api/v4/search?q={query}&from={from_date.date()}&to={to_date.date()}&lang=en&apikey={GNEWS_API_KEY}"
+    url = (
+        f"https://gnews.io/api/v4/search?q={query}"
+        f"&from={from_date.date()}&to={to_date.date()}"
+        f"&lang=en&max=10&sortby=publishedAt&apikey={GNEWS_API_KEY}"
+    )
+
     response = requests.get(url)
     data = response.json()
-
     articles = data.get("articles", [])
+
     if not articles:
-        return 0.0
+        return 0.2, {
+            "predicted_label": "Low",
+            "explanation": "No recent news articles found."
+        }
 
-    keyword_hits = 0
-    total_weight = 0
-    for article in articles:
-        content = f"{article['title']} {article.get('description', '')}".lower()
-        for word, weight in RISK_KEYWORDS.items():
-            if word in content:
-                keyword_hits += 1
-                total_weight += weight
+    # Use first article for scoring (or combine later if needed)
+    text = articles[0]["title"] + " " + articles[0].get("description", "")
+    predicted_label = model.predict([text])[0]
+    score = LABEL_TO_SCORE.get(predicted_label, 0.5)
 
-    normalized_score = min(total_weight / len(articles), 1.0)
-    return round(normalized_score, 2)
+    return round(score, 2), {
+        "predicted_label": predicted_label,
+        "explanation": f"Predicted '{predicted_label}' risk based on recent article: '{articles[0]['title']}'"
+    }
 
 # ✅ 2. Natural Disaster Risk
 def get_natural_disaster_risk(supplier: str) -> float:
@@ -63,7 +71,7 @@ def get_economic_risk(supplier: str) -> float:
 
 # ✅ 4. Final Risk Scoring
 def compute_risk_score(supplier, product):
-    news_risk = get_news_risk(supplier, product)
+    news_risk, news_meta = get_news_risk(supplier, product)
     natural_disaster_risk = get_natural_disaster_risk(supplier)
     economic_risk = get_economic_risk(supplier)
 
@@ -76,6 +84,8 @@ def compute_risk_score(supplier, product):
         "risk_factors": {
             "news_risk": news_risk,
             "natural_disaster_risk": natural_disaster_risk,
-            "economic_risk": economic_risk
+            "economic_risk": economic_risk,
+            "predicted_label": news_meta["predicted_label"],
+            "explanation": news_meta["explanation"]
         }
     }

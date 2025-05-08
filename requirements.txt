@@ -4,3 +4,5 @@ requests
 python-dotenv
 streamlit
 pandas
+joblib
+scikit-learn
