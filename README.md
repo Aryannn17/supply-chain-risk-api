@@ -44,8 +44,8 @@ uvicorn main:app --reload
 ```
 
 Visit:
-📍 http://127.0.0.1:8000/docs — for Swagger UI
-📍 http://127.0.0.1:8000/risk_score?supplier=China&product=semiconductor — sample request
+- 📍 http://127.0.0.1:8000/docs — for Swagger UI
+- 📍 http://127.0.0.1:8000/risk_score?supplier=China&product=semiconductor — sample request
 
 📈 Sample Response
 {
@@ -60,7 +60,7 @@ Visit:
 }
 
 - 🌐 Deployed Links
-🔌 API: https://supply-chain-risk-api.onrender.com
+- 🔌 API: https://supply-chain-risk-api.onrender.com
 
 - 🌐 Frontend: https://supply-chain-risk-api-lvwr9pd4jdhyej2ljm6spo.streamlit.app/
 
@@ -82,5 +82,5 @@ Visit:
 
 
 🧑‍💻 Author
-Built with ❤️ by Aryan Srivastva
+- Built with ❤️ by Aryan Srivastva
 📫 @Aryannn17
