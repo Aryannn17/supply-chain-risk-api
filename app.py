@@ -44,7 +44,21 @@ if uploaded_file is not None:
             if response.status_code == 200:
                 results = response.json()
                 results_df = pd.DataFrame(results)
-                st.dataframe(results_df[["supplier", "product", "risk_score"]])
+
+# Add interpretation
+def interpret(score):
+    if score < 0.35:
+        return "🟢 Low"
+    elif score < 0.7:
+        return "🟡 Medium"
+    else:
+        return "🔴 High"
+
+results_df["Risk Level"] = results_df["risk_score"].apply(interpret)
+
+# Show styled table
+st.dataframe(results_df[["supplier", "product", "risk_score", "Risk Level"]])
+
             else:
                 st.error("❌ API request failed.")
         except Exception as e:
