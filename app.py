@@ -2,7 +2,6 @@ import streamlit as st
 import requests
 import pandas as pd
 
-
 st.title("📦 Supply Chain Risk Detector")
 
 st.markdown("Check geopolitical, disaster & economic risk for any supplier.")
@@ -37,28 +36,24 @@ def interpret(score):
         return "🟡 Medium"
     else:
         return "🔴 High"
-    
-if uploaded_file is not None:
 
+if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 
     if "supplier" in df.columns and "product" in df.columns:
         st.success(f"📦 Processing {len(df)} rows...")
 
-        # Convert to list of dicts
         batch_data = df[["supplier", "product"]].to_dict(orient="records")
 
-        # Send to /batch_score
         try:
             response = requests.post("https://supply-chain-risk-api.onrender.com/batch_score", json=batch_data)
             if response.status_code == 200:
                 results = response.json()
                 results_df = pd.DataFrame(results)
-results_df["Risk Level"] = results_df["risk_score"].apply(interpret)
+                results_df["Risk Level"] = results_df["risk_score"].apply(interpret)
 
-# Show styled table
-st.dataframe(results_df[["supplier", "product", "risk_score", "Risk Level"]])
-
+                # Show styled table
+                st.dataframe(results_df[["supplier", "product", "risk_score", "Risk Level"]])
             else:
                 st.error("❌ API request failed.")
         except Exception as e:
