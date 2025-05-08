@@ -59,26 +59,26 @@ Visit:
   }
 }
 
-🌐 Deployed Links
+- 🌐 Deployed Links
 🔌 API: https://supply-chain-risk-api.onrender.com
 
-🌐 Frontend: https://supply-chain-risk-api-lvwr9pd4jdhyej2ljm6spo.streamlit.app/
+- 🌐 Frontend: https://supply-chain-risk-api-lvwr9pd4jdhyej2ljm6spo.streamlit.app/
 
-📄 Swagger: https://supply-chain-risk-api.onrender.com/docs
+- 📄 Swagger: https://supply-chain-risk-api.onrender.com/docs
 
 
 📦 Tech Stack
-Backend: FastAPI, Requests, Uvicorn
-Frontend: Streamlit, Pandas
-Deployment: Render (API) + Streamlit Cloud
-Data: GNews API + static disaster/economic mapping
+- Backend: FastAPI, Requests, Uvicorn
+- Frontend: Streamlit, Pandas
+- Deployment: Render (API) + Streamlit Cloud
+- Data: GNews API + static disaster/economic mapping
 
 🧠 Future Enhancements
-⏳ Replace heuristics with ML/NLP scoring on news articles
-🌍 Live disaster feeds (e.g., GDACS, ReliefWeb)
-📈 Logging + analytics dashboard
-🔐 API key system for public usage
-📦 Package as SaaS microservice
+- ⏳ Replace heuristics with ML/NLP scoring on news articles
+- 🌍 Live disaster feeds (e.g., GDACS, ReliefWeb)
+- 📈 Logging + analytics dashboard
+- 🔐 API key system for public usage
+- 📦 Package as SaaS microservice
 
 
 🧑‍💻 Author
