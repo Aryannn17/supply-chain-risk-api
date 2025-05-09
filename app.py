@@ -3,32 +3,13 @@ import requests
 import pandas as pd
 
 st.title("📦 Supply Chain Risk Detector")
-
 st.markdown("Check geopolitical, disaster & economic risk for any supplier.")
 
 supplier = st.text_input("Enter Supplier Country", "China")
 product = st.text_input("Enter Product Type", "semiconductor")
 
-if st.button("Analyze Risk"):
-    url = "https://supply-chain-risk-api.onrender.com/risk_score"
-    params = {"supplier": supplier, "product": product}
-    response = requests.get(url, params=params)
 
-    if response.status_code == 200:
-        data = response.json()
-        st.success(f"Total Risk Score: {data['risk_score']}")
-        st.subheader("Breakdown:")
-        st.json(data["risk_factors"])
-    else:
-        st.error("API call failed. Try again.")
-
-st.markdown("---")
-st.subheader("📄 Upload CSV for Batch Scoring")
-
-uploaded_file = st.file_uploader("Upload a CSV file with 'supplier' and 'product' columns", type="csv")
-
-
-# Add interpretation
+# Interpretation helper
 def interpret(score):
     if score < 0.35:
         return "🟢 Low"
@@ -36,6 +17,46 @@ def interpret(score):
         return "🟡 Medium"
     else:
         return "🔴 High"
+
+# Analyze Risk API call
+if st.button("Analyze Risk"):
+    url = "https://supply-chain-risk-api.onrender.com/risk_score"
+    params = {"supplier": supplier, "product": product}
+    response = requests.get(url, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        st.success(f"📊 Total Risk Score: {data['risk_score']}")
+
+        # ✅ Overall label
+        overall_label = interpret(data["risk_score"])
+        st.subheader("📊 Overall Risk Level")
+        st.success(overall_label)
+
+        # ✅ Predicted label from ML
+        st.subheader("📌 Predicted News Risk Label")
+        st.info(data["risk_factors"].get("predicted_label", "N/A"))
+
+        # ✅ Explanation from model
+        st.subheader("🧠 Explanation")
+        st.write(data["risk_factors"].get("explanation", "No explanation available."))
+
+        # ✅ Risk breakdown
+        st.subheader("📉 Risk Breakdown")
+        st.json({
+            "News Risk": data["risk_factors"]["news_risk"],
+            "Disaster Risk": data["risk_factors"]["natural_disaster_risk"],
+            "Economic Risk": data["risk_factors"]["economic_risk"]
+        })
+    else:
+        st.error("API call failed. Try again.")
+
+# ---------------------------------------
+# 📄 CSV Upload & Batch Scoring
+# ---------------------------------------
+st.markdown("---")
+st.subheader("📄 Upload CSV for Batch Scoring")
+uploaded_file = st.file_uploader("Upload a CSV file with 'supplier' and 'product' columns", type="csv")
 
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
@@ -52,7 +73,6 @@ if uploaded_file is not None:
                 results_df = pd.DataFrame(results)
                 results_df["Risk Level"] = results_df["risk_score"].apply(interpret)
 
-                # Show styled table
                 st.dataframe(results_df[["supplier", "product", "risk_score", "Risk Level"]])
             else:
                 st.error("❌ API request failed.")
