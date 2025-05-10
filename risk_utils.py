@@ -39,20 +39,28 @@ def get_news_risk(supplier, product):
     if not articles:
         return 0.2, {
             "predicted_label": "Low",
-            "explanation": "No recent news articles found."
+            "explanation": "No recent news articles found related to this supplier or product."
         }
 
-    # Use first article for scoring (or combine later if needed)
     texts = [a['title'] + " " + a.get('description', '') for a in articles]
     predicted_labels = model.predict(texts)
     label_counts = pd.Series(predicted_labels).value_counts()
-    # Choose most frequent label
     top_label = label_counts.idxmax()
     score = LABEL_TO_SCORE.get(top_label, 0.5)
 
+    # Get details for explanation
+    top_article = articles[0]
+    title = top_article.get('title', 'Untitled')
+    desc = top_article.get('description', '').strip()
+    url = top_article.get('url', '#')
+
+    # Generate final explanation
+    summary = desc if desc else f"A news article indicates potential risk related to {supplier} and {product}."
+    explanation = f"{summary} 🔗 [Read more]({url})"
+
     return round(score, 2), {
         "predicted_label": top_label,
-        "explanation": f"Predicted '{top_label}' risk based on recent article: '{articles[0]['title']}'"
+        "explanation": explanation
     }
 
 # ✅ 2. Natural Disaster Risk
