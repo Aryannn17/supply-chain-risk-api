@@ -1,4 +1,4 @@
-# 🚚 Supply Chain Risk Detector API
+# 🚚 Supply Chain Risk Detector
 
 An AI-powered FastAPI + Streamlit application that identifies **supply chain risks** based on:
 - 📰 Real-time geopolitical news (via GNews)
