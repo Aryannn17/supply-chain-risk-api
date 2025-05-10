@@ -4,8 +4,24 @@ import joblib
 import pandas as pd
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+import openai
 
 load_dotenv()
+
+openai.api_key = os.getenv("TOGETHER_API_KEY")
+openai.api_base = "https://api.together.xyz/v1"
+
+def summarize_with_llm(text):
+    try:
+        prompt = f"Summarize this news article in 1-2 lines:\n\n{text}"
+        response = openai.ChatCompletion.create(
+            model="mistralai/Mixtral-8x7B-Instruct-v0.1",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+        )
+        return response['choices'][0]['message']['content'].strip()
+    except Exception as e:
+        return "Summary generation failed."
 
 # ✅ Load GNews API key
 GNEWS_API_KEY = os.getenv("GNEWS_API_KEY")
@@ -55,7 +71,9 @@ def get_news_risk(supplier, product):
     url = top_article.get('url', '#')
 
     # Generate final explanation
-    summary = desc if desc else f"A news article indicates potential risk related to {supplier} and {product}."
+    summary_input = f"{title}. {desc}"
+    summary = summarize_with_llm(summary_input)
+
     explanation = f"{summary} 🔗 [Read more]({url})"
 
     return round(score, 2), {
@@ -101,3 +119,5 @@ def compute_risk_score(supplier, product):
             "explanation": news_meta["explanation"]
         }
     }
+
+
