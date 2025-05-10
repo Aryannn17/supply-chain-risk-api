@@ -78,7 +78,7 @@ def compute_risk_score(supplier, product):
     natural_disaster_risk = get_natural_disaster_risk(supplier)
     economic_risk = get_economic_risk(supplier)
 
-    total_risk = round((news_risk + natural_disaster_risk + economic_risk) / 3, 2)
+    total_risk = round((0.5 * news_risk + 0.25 * economic_risk + 0.25 * natural_disaster_risk), 2)
 
     return {
         "supplier": supplier,
