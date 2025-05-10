@@ -70,14 +70,17 @@ def get_news_risk(supplier, product):
     top_article = articles[0]
     title = top_article['title']
     url = top_article['url']
+    description = top_article.get("description") or title
+
 
     # Generate summary
-    summary_text = summarize_with_llm(top_article['description'] or title)
+    summary_text = summarize_with_llm(description)
 
     return round(score, 2), {
         "predicted_label": top_label,
         "summary": summary_text,
-        "explanation": f"[{title}]({url})"
+        "explanation": f"Predicted '{top_label}' risk from recent article.",
+        "article_link": f"[{title}]({url})"
     }
 
 # ✅ 2. Natural Disaster Risk
@@ -115,7 +118,9 @@ def compute_risk_score(supplier, product):
             "natural_disaster_risk": natural_disaster_risk,
             "economic_risk": economic_risk,
             "predicted_label": news_meta["predicted_label"],
-            "explanation": news_meta["explanation"]
+            "summary": news_meta["summary"],
+            "explanation": news_meta["explanation"],
+            "article_link": news_meta["article_link"]
         }
     }
 

@@ -41,11 +41,11 @@ if st.button("Analyze Risk"):
         st.write(data['risk_factors'].get('summary', 'No summary available.'))
 
         st.subheader("🔗 Source Article")
-        st.markdown(data['risk_factors'].get('explanation', 'No article link.'), unsafe_allow_html=True)
+        st.markdown(data['risk_factors'].get('article_link', 'No article link.'), unsafe_allow_html=True)
 
-        # ✅ Explanation from model
         st.subheader("🧠 Explanation")
-        st.write(data["risk_factors"].get("explanation", "No explanation available."))
+        st.write(data['risk_factors'].get('explanation', 'No explanation available.'))
+
 
         # ✅ Risk breakdown
         st.subheader("📉 Risk Breakdown")
