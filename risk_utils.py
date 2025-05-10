@@ -50,8 +50,8 @@ def get_news_risk(supplier, product):
     score = LABEL_TO_SCORE.get(top_label, 0.5)
 
     return round(score, 2), {
-        "predicted_label": predicted_label,
-        "explanation": f"Predicted '{predicted_label}' risk based on recent article: '{articles[0]['title']}'"
+        "predicted_label": top_label,
+        "explanation": f"Predicted '{top_label}' risk based on recent article: '{articles[0]['title']}'"
     }
 
 # ✅ 2. Natural Disaster Risk
