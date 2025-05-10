@@ -13,7 +13,7 @@ openai.api_base = "https://api.together.xyz/v1"
 
 def summarize_with_llm(text):
     try:
-        prompt = f"Summarize this news article in 1-2 lines:\n\n{text}"
+        prompt = f"Summarize this news article in 1–2 lines:\n\n{text}"
         response = openai.ChatCompletion.create(
             model="mistralai/Mixtral-8x7B-Instruct-v0.1",
             messages=[{"role": "user", "content": prompt}],
@@ -21,7 +21,9 @@ def summarize_with_llm(text):
         )
         return response['choices'][0]['message']['content'].strip()
     except Exception as e:
+        print("❌ LLM Error:", e)
         return "Summary generation failed."
+
 
 # ✅ Load GNews API key
 GNEWS_API_KEY = os.getenv("GNEWS_API_KEY")
