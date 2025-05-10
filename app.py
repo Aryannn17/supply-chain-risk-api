@@ -35,7 +35,13 @@ if st.button("Analyze Risk"):
 
         # ✅ Predicted label from ML
         st.subheader("📌 Predicted News Risk Label")
-        st.info(data["risk_factors"].get("predicted_label", "N/A"))
+        st.info(f"{data['risk_factors'].get('predicted_label', 'N/A')}")
+
+        st.subheader("📰 Top News Summary")
+        st.write(data['risk_factors'].get('summary', 'No summary available.'))
+
+        st.subheader("🔗 Source Article")
+        st.markdown(data['risk_factors'].get('explanation', 'No article link.'), unsafe_allow_html=True)
 
         # ✅ Explanation from model
         st.subheader("🧠 Explanation")

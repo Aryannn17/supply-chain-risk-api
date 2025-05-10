@@ -66,21 +66,18 @@ def get_news_risk(supplier, product):
     top_label = label_counts.idxmax()
     score = LABEL_TO_SCORE.get(top_label, 0.5)
 
-    # Get details for explanation
+    # Use first article for scoring
     top_article = articles[0]
-    title = top_article.get('title', 'Untitled')
-    desc = top_article.get('description', '').strip()
-    url = top_article.get('url', '#')
+    title = top_article['title']
+    url = top_article['url']
 
-    # Generate final explanation
-    summary_input = f"{title}. {desc}"
-    summary = summarize_with_llm(summary_input)
-
-    explanation = f"{summary} 🔗 [Read more]({url})"
+    # Generate summary
+    summary_text = summarize_with_llm(top_article['description'] or title)
 
     return round(score, 2), {
         "predicted_label": top_label,
-        "explanation": explanation
+        "summary": summary_text,
+        "explanation": f"[{title}]({url})"
     }
 
 # ✅ 2. Natural Disaster Risk
