@@ -20,9 +20,10 @@ def interpret(score):
 
 # Analyze Risk API call
 if st.button("Analyze Risk"):
-    url = "https://supply-chain-risk-api.onrender.com/risk_score"
-    params = {"supplier": supplier, "product": product}
-    response = requests.get(url, params=params)
+    with st.spinner("Analyzing supply chain risk..."):
+        url = "https://supply-chain-risk-api.onrender.com/risk_score"
+        params = {"supplier": supplier, "product": product}
+        response = requests.get(url, params=params)
 
     if response.status_code == 200:
         data = response.json()
