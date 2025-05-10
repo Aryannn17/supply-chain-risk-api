@@ -42,9 +42,12 @@ def get_news_risk(supplier, product):
         }
 
     # Use first article for scoring (or combine later if needed)
-    text = articles[0]["title"] + " " + articles[0].get("description", "")
-    predicted_label = model.predict([text])[0]
-    score = LABEL_TO_SCORE.get(predicted_label, 0.5)
+    texts = [a['title'] + " " + a.get('description', '') for a in articles]
+    predicted_labels = model.predict(texts)
+    label_counts = pd.Series(predicted_labels).value_counts()
+    # Choose most frequent label
+    top_label = label_counts.idxmax()
+    score = LABEL_TO_SCORE.get(top_label, 0.5)
 
     return round(score, 2), {
         "predicted_label": predicted_label,
