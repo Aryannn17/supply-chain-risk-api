@@ -8,6 +8,7 @@ import openai
 
 load_dotenv()
 
+# ✅ Set Together API for LLM summaries
 openai.api_key = os.getenv("TOGETHER_API_KEY")
 openai.api_base = "https://api.together.xyz/v1"
 
@@ -25,20 +26,18 @@ def summarize_with_llm(text):
         return "Summary generation failed."
 
 
-# ✅ Load GNews API key
+# ✅ GNews API
 GNEWS_API_KEY = os.getenv("GNEWS_API_KEY")
 
-# ✅ Load trained ML model
+# ✅ ML Risk Model
 model = joblib.load("news_risk_model.pkl")
 
-# ✅ Label-to-score mapping
 LABEL_TO_SCORE = {
     "Low": 0.2,
     "Medium": 0.5,
     "High": 0.8
 }
 
-# ✅ 1. News Risk (ML-based)
 def get_news_risk(supplier, product):
     query = f"{supplier} {product}"
     to_date = datetime.utcnow()
@@ -50,45 +49,60 @@ def get_news_risk(supplier, product):
         f"&lang=en&max=10&sortby=publishedAt&apikey={GNEWS_API_KEY}"
     )
 
-    response = requests.get(url)
-    data = response.json()
-    articles = data.get("articles", [])
+    try:
+        response = requests.get(url)
+        data = response.json()
+        articles = data.get("articles", [])
+    except Exception:
+        return 0.2, {
+            "predicted_label": "Low",
+            "summary": "Summary generation failed.",
+            "explanation": "News data fetch failed.",
+            "article_link": "No link available."
+        }
 
     if not articles:
         return 0.2, {
             "predicted_label": "Low",
-            "explanation": "No recent news articles found related to this supplier or product."
+            "summary": "No summary available.",
+            "explanation": "No recent news articles found related to this supplier or product.",
+            "article_link": "No link available."
         }
 
-    texts = [a['title'] + " " + a.get('description', '') for a in articles]
-    predicted_labels = model.predict(texts)
-    label_counts = pd.Series(predicted_labels).value_counts()
-    top_label = label_counts.idxmax()
-    score = LABEL_TO_SCORE.get(top_label, 0.5)
+    try:
+        texts = [a['title'] + " " + a.get('description', '') for a in articles]
+        predicted_labels = model.predict(texts)
+        label_counts = pd.Series(predicted_labels).value_counts()
+        top_label = label_counts.idxmax()
+        score = LABEL_TO_SCORE.get(top_label, 0.5)
 
-    # Use first article for scoring
-    top_article = articles[0]
-    title = top_article['title']
-    url = top_article['url']
-    description = top_article.get("description") or title
+        top_article = articles[0]
+        title = top_article['title']
+        url = top_article['url']
+        description = top_article.get('description') or title
+        summary = summarize_with_llm(description)
 
+        return round(score, 2), {
+            "predicted_label": top_label,
+            "summary": summary,
+            "explanation": f"Predicted '{top_label}' risk from recent article.",
+            "article_link": f"[{title}]({url})"
+        }
 
-    # Generate summary
-    summary_text = summarize_with_llm(description)
+    except Exception as e:
+        return 0.3, {
+            "predicted_label": "Medium",
+            "summary": "Summary generation failed.",
+            "explanation": f"Prediction or summary error: {str(e)}",
+            "article_link": "No link available."
+        }
 
-    return round(score, 2), {
-        "predicted_label": top_label,
-        "summary": summary_text,
-        "explanation": f"Predicted '{top_label}' risk from recent article.",
-        "article_link": f"[{title}]({url})"
-    }
-
-# ✅ 2. Natural Disaster Risk
+# ✅ Natural Disaster Risk
 def get_natural_disaster_risk(supplier: str) -> float:
     high_risk_countries = ["Philippines", "Indonesia", "Bangladesh", "Nepal", "China", "India"]
     return 0.6 if supplier in high_risk_countries else 0.2
 
-# ✅ 3. Economic Risk
+# ✅ Economic Risk
 def get_economic_risk(supplier: str) -> float:
     economic_risk_map = {
         "China": 0.3,
@@ -101,7 +115,7 @@ def get_economic_risk(supplier: str) -> float:
     }
     return economic_risk_map.get(supplier, 0.5)
 
-# ✅ 4. Final Risk Scoring
+# ✅ Final Risk Score
 def compute_risk_score(supplier, product):
     news_risk, news_meta = get_news_risk(supplier, product)
     natural_disaster_risk = get_natural_disaster_risk(supplier)
@@ -123,5 +137,3 @@ def compute_risk_score(supplier, product):
             "article_link": news_meta["article_link"]
         }
     }
-
-
